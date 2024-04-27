@@ -9,7 +9,7 @@ network = {
   subnet_cidr_01 = "10.0.0.0/24"
   subnet_cidr_02 = "10.0.1.0/24"
   flowlogs = {
-    enabled       = false
+    enabled       = true
     force_destroy = true # For testing purposes only
   }
 }
