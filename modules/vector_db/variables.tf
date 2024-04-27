@@ -8,10 +8,10 @@ variable "network" {
     vpc = object({
       id = string
     })
-    public_subnet_01 = object({
+    private_subnet_01 = object({
       id = string
     })
-    public_subnet_02 = object({
+    private_subnet_02 = object({
       id = string
     })
   })

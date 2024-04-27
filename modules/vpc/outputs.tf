@@ -6,13 +6,6 @@ output "vpc" {
 }
 
 ########################################################
-# Internet Gateway
-########################################################
-output "igw" {
-  value = aws_internet_gateway.this
-}
-
-########################################################
 # Route Table
 ########################################################
 output "rtb" {
@@ -22,12 +15,12 @@ output "rtb" {
 ########################################################
 # Subnet
 ########################################################
-output "public_subnet_01" {
-  value = aws_subnet.public_01
+output "private_subnet_01" {
+  value = aws_subnet.private_01
 }
 
-output "public_subnet_02" {
-  value = aws_subnet.public_02
+output "private_subnet_02" {
+  value = aws_subnet.private_02
 }
 
 ########################################################

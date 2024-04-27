@@ -10,22 +10,14 @@ resource "aws_security_group" "this" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "this_https" {
-  security_group_id = aws_security_group.this.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 443
-  to_port           = 443
-  ip_protocol       = "tcp"
-}
-
 ########################################################
 # Subnet Group
 ########################################################
 resource "aws_db_subnet_group" "this" {
   name = "${var.prefix}-kb-vctrdb-sbntgrp"
   subnet_ids = [
-    var.network.public_subnet_01.id,
-    var.network.public_subnet_02.id,
+    var.network.private_subnet_01.id,
+    var.network.private_subnet_02.id,
   ]
 
   tags = {
@@ -116,7 +108,7 @@ resource "aws_rds_cluster" "this" {
 # Secrets Manager for bedrock_user ROLE
 ########################################################
 resource "aws_secretsmanager_secret" "this" {
-  name                    = "${var.prefix}-kb-vctrdb-secrets"
+  name                    = "${var.prefix}-kb-vctrdb-secret"
   description             = "Password for the bedrock_user role"
   recovery_window_in_days = var.secret.recovery_window_in_days
 }
@@ -146,7 +138,6 @@ resource "aws_rds_cluster_instance" "this_01" {
   monitoring_interval                   = var.vector_db.enhanced_monitoring.enabled ? 60 : null
   monitoring_role_arn                   = var.vector_db.enhanced_monitoring.enabled ? aws_iam_role.this[0].arn : null
   preferred_maintenance_window          = var.vector_db.operating_window.preferred_instance_01_maintenance
-  publicly_accessible                   = true
   performance_insights_enabled          = var.vector_db.performance_insights.enabled
   performance_insights_retention_period = var.vector_db.performance_insights.retention_period
   auto_minor_version_upgrade            = var.vector_db.auto_minor_version_upgrade
@@ -174,7 +165,6 @@ resource "aws_rds_cluster_instance" "this_02" {
   monitoring_interval                   = var.vector_db.enhanced_monitoring.enabled ? 60 : null
   monitoring_role_arn                   = var.vector_db.enhanced_monitoring.enabled ? aws_iam_role.this[0].arn : null
   preferred_maintenance_window          = var.vector_db.operating_window.preferred_instance_02_maintenance
-  publicly_accessible                   = true
   performance_insights_enabled          = var.vector_db.performance_insights.enabled
   performance_insights_retention_period = var.vector_db.performance_insights.retention_period
   auto_minor_version_upgrade            = var.vector_db.auto_minor_version_upgrade

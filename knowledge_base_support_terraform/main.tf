@@ -21,9 +21,9 @@ module "vector_db" {
     db_password = random_password.vector_db.result
   })
   network = {
-    vpc              = module.network.vpc
-    public_subnet_01 = module.network.public_subnet_01
-    public_subnet_02 = module.network.public_subnet_02
+    vpc               = module.network.vpc
+    private_subnet_01 = module.network.private_subnet_01
+    private_subnet_02 = module.network.private_subnet_02
   }
   embeddings = {
     model_dimensions = var.knowledge_bases.embeddings_model_dimensions
@@ -115,6 +115,8 @@ resource "aws_bedrockagent_knowledge_base" "this" {
       }
     }
   }
+
+  depends_on = [aws_iam_role_policy_attachment.knowledge_bases]
 }
 
 ########################################################
