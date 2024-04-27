@@ -171,8 +171,8 @@ resource "aws_rds_cluster_instance" "this_02" {
   ca_cert_identifier                    = "rds-ca-rsa2048-g1"
   db_parameter_group_name               = aws_db_parameter_group.this.name
   db_subnet_group_name                  = aws_db_subnet_group.this.name
-  monitoring_interval                   = var.vector_db.enhanced_monitoring ? 60 : null
-  monitoring_role_arn                   = var.vector_db.enhanced_monitoring ? aws_iam_role.this[0].arn : null
+  monitoring_interval                   = var.vector_db.enhanced_monitoring.enabled ? 60 : null
+  monitoring_role_arn                   = var.vector_db.enhanced_monitoring.enabled ? aws_iam_role.this[0].arn : null
   preferred_maintenance_window          = var.vector_db.operating_window.preferred_instance_02_maintenance
   publicly_accessible                   = true
   performance_insights_enabled          = var.vector_db.performance_insights.enabled

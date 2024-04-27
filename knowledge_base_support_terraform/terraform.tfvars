@@ -18,7 +18,7 @@ network = {
 # Vector Database
 ########################################################
 vector_db = {
-  multi_az                    = false
+  multi_az                    = true
   engine_name                 = "aurora-postgresql"
   engine_family               = "aurora-postgresql15"
   database_name               = "postgresql"
