@@ -9,7 +9,7 @@ network = {
   subnet_cidr_01 = "10.0.0.0/24"
   subnet_cidr_02 = "10.0.1.0/24"
   flowlogs = {
-    enabled       = true
+    enabled       = false
     force_destroy = true # For testing purposes only
   }
 }
@@ -18,7 +18,7 @@ network = {
 # Vector Database
 ########################################################
 vector_db = {
-  multi_az                    = true
+  multi_az                    = false
   engine_name                 = "aurora-postgresql"
   engine_family               = "aurora-postgresql15"
   database_name               = "postgresql"
