@@ -1,0 +1,46 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "FoundationModelStatementID",
+			"Effect": "Allow",
+			"Action": ["bedrock:ListFoundationModels", "bedrock:ListCustomModels"],
+			"Resource": "*"
+		},
+		{
+			"Sid": "ModelStatementID",
+			"Effect": "Allow",
+			"Action": ["bedrock:InvokeModel"],
+			"Resource": ["${model_arn}"]
+		},
+		{
+			"Sid": "S3StatementID",
+			"Effect": "Allow",
+			"Action": ["s3:GetObject", "s3:ListBucket"],
+			"Resource": ["${bucket_arn}", "${bucket_arn}/*"],
+			"Condition": {
+				"StringEquals": {
+					"aws:PrincipalAccount": "${account_id}"
+				}
+			}
+		},
+		{
+			"Sid": "RdsDescribeStatementID",
+			"Effect": "Allow",
+			"Action": ["rds:DescribeDBClusters"],
+			"Resource": ["${db_cluster_arn}"]
+		},
+		{
+			"Sid": "DataAPIStatementID",
+			"Effect": "Allow",
+			"Action": ["rds-data:BatchExecuteStatement", "rds-data:ExecuteStatement"],
+			"Resource": ["${db_cluster_arn}"]
+		},
+		{
+			"Sid": "SecretsManagerStatementID",
+			"Effect": "Allow",
+			"Action": ["secretsmanager:GetSecretValue"],
+			"Resource": ["${secret_arn}"]
+		}
+	]
+}
