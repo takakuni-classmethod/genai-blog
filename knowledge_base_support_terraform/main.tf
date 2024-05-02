@@ -116,7 +116,10 @@ resource "aws_bedrockagent_knowledge_base" "this" {
     }
   }
 
-  depends_on = [aws_iam_role_policy_attachment.knowledge_bases]
+  depends_on = [
+    aws_iam_role_policy_attachment.knowledge_bases,
+    module.vector_db.instance_01
+  ]
 }
 
 ########################################################
@@ -131,4 +134,13 @@ resource "awscc_bedrock_data_source" "this" {
       bucket_arn = module.datasource.bucket.arn
     }
   }
+  # vector_ingestion_configuration = {
+  #   chunking_configuration = {
+  #     chunking_strategy = "FIXED_SIZE"
+  #     fixed_size_chunking_configuration = {
+  #       max_tokens         = 250
+  #       overlap_percentage = 10
+  #     }
+  #   }
+  # }
 }
