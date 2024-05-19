@@ -1,0 +1,9 @@
+system_name = "pinecone-serverless"
+environment_name = "dev"
+vector_db = {
+  pinecone_api_key = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  secret_recovery_window_in_days = 7
+}
+datasource = {
+  force_destroy = true
+}
