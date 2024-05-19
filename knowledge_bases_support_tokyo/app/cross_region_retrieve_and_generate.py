@@ -15,7 +15,7 @@ messsage = "事業計画について教えてください"
 
 filter = {
     "andAll": [
-        {"equals": {"key": "year", "value": 2024}},
+        {"equals": {"key": "year", "value": 2023}},
         {"equals": {"key": "for_managers", "value": True}},
     ]
 }
