@@ -13,35 +13,46 @@ module "datasource" {
 ########################################################
 # Put Object
 ########################################################
-resource "aws_s3_object" "sample_business_plan" {
+# resource "aws_s3_object" "bedrock_api_guide" {
+#   # アップロード元(ローカル)
+#   source = "../サンプルドキュメント/bedrock/bedrock-api.pdf"
+#   # アップロード先(S3)
+#   key    = "bedrock/bedrock-api.pdf"
+#   bucket = module.datasource.bucket.id
+
+#   # エンティティタグ (ファイル更新のトリガーに必要)
+#   source_hash = filemd5("../サンプルドキュメント/bedrock/bedrock-api.pdf")
+# }
+
+resource "aws_s3_object" "bedrock_user_guide" {
   # アップロード元(ローカル)
-  source = "../サンプルドキュメント/company-wide/2024年度事業計画.md"
+  source = "../サンプルドキュメント/bedrock/bedrock-ug.pdf"
   # アップロード先(S3)
-  key    = "company-wide/2024年度事業計画.md"
+  key    = "bedrock/bedrock-ug.pdf"
   bucket = module.datasource.bucket.id
 
   # エンティティタグ (ファイル更新のトリガーに必要)
-  etag = filemd5("../サンプルドキュメント/company-wide/2024年度事業計画.md")
+  source_hash = filemd5("../サンプルドキュメント/bedrock/bedrock-ug.pdf")
 }
 
-resource "aws_s3_object" "sample_business_plan_metadata" {
+resource "aws_s3_object" "bedrock_studio_user_guide" {
   # アップロード元(ローカル)
-  source = "../サンプルドキュメント/company-wide/2024年度事業計画.md.metadata.json"
+  source = "../サンプルドキュメント/bedrock/bedrock-studio-user-guide.pdf"
   # アップロード先(S3)
-  key    = "company-wide/2024年度事業計画.md.metadata.json"
+  key    = "bedrock/bedrock-studio-user-guide.pdf"
   bucket = module.datasource.bucket.id
 
   # エンティティタグ (ファイル更新のトリガーに必要)
-  etag = filemd5("../サンプルドキュメント/company-wide/2024年度事業計画.md.metadata.json")
+  source_hash = filemd5("../サンプルドキュメント/bedrock/bedrock-studio-user-guide.pdf")
 }
 
 ########################################################
 # Vector Database
 #######################################################
 resource "pinecone_index" "this" {
-  name      = "knowledge-base"
-  dimension = 1536
-  # dimension = 1024
+  name = "knowledge-base"
+  # dimension = 1536
+  dimension = 1024
   spec = {
     serverless = {
       cloud  = "aws"
@@ -51,7 +62,7 @@ resource "pinecone_index" "this" {
 }
 
 resource "aws_secretsmanager_secret" "this" {
-  name                    = "${local.prefix}-vctrdb-secret"
+  name                    = "${local.prefix}-vctrdb-secret-${local.account_id}"
   description             = "Password for the bedrock_user"
   recovery_window_in_days = var.vector_db.secret_recovery_window_in_days
 }
@@ -76,10 +87,11 @@ data "aws_bedrock_foundation_models" "embedding" {
 }
 
 data "aws_bedrock_foundation_model" "embedding" {
-  model_id = "amazon.titan-embed-text-v1"
+  # model_id = "amazon.titan-embed-text-v1"
   # model_id = "amazon.titan-embed-text-v1:2:8k"
-  # model_id = "amazon.titan-embed-text-v2:0"
+  model_id = "amazon.titan-embed-text-v2:0"
   # model_id = "amazon.titan-embed-g1-text-02"
+  # model_id = "cohere.embed-multilingual-v3"
 }
 
 ########################################################
@@ -123,6 +135,11 @@ resource "aws_iam_role_policy_attachment" "knowledge_bases" {
 ########################################################
 # Knowledge Bases
 ########################################################
+resource "aws_cloudwatch_log_group" "this" {
+  name              = "/aws/vendedlogs/bedrock/knowledge-base/APPLICATION_LOGS/${local.prefix}-knowledge-base"
+  retention_in_days = 7
+}
+
 resource "aws_bedrockagent_knowledge_base" "this" {
   name     = "${local.prefix}-knowledge-base"
   role_arn = aws_iam_role.knowledge_bases.arn

@@ -8,10 +8,6 @@ terraform {
       source  = "hashicorp/aws"
       version = "5.49.0"
     }
-    awscc = {
-      source  = "hashicorp/awscc"
-      version = "0.76.0"
-    }
   }
 }
 
@@ -20,10 +16,6 @@ provider "pinecone" {
 }
 
 provider "aws" {
-  region = "us-west-2"
-}
-
-provider "awscc" {
   region = "us-west-2"
 }
 
