@@ -33,3 +33,6 @@ override.tf.json
 terraform.rc
 
 **/feedback
+*.tfvars
+
+**/.envrc
