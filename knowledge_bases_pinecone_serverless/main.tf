@@ -35,24 +35,24 @@ resource "aws_s3_object" "bedrock_user_guide" {
   source_hash = filemd5("../サンプルドキュメント/bedrock/bedrock-ug.pdf")
 }
 
-resource "aws_s3_object" "bedrock_studio_user_guide" {
-  # アップロード元(ローカル)
-  source = "../サンプルドキュメント/bedrock/bedrock-studio-user-guide.pdf"
-  # アップロード先(S3)
-  key    = "bedrock/bedrock-studio-user-guide.pdf"
-  bucket = module.datasource.bucket.id
+# resource "aws_s3_object" "bedrock_studio_user_guide" {
+#   # アップロード元(ローカル)
+#   source = "../サンプルドキュメント/bedrock/bedrock-studio-user-guide.pdf"
+#   # アップロード先(S3)
+#   key    = "bedrock/bedrock-studio-user-guide.pdf"
+#   bucket = module.datasource.bucket.id
 
-  # エンティティタグ (ファイル更新のトリガーに必要)
-  source_hash = filemd5("../サンプルドキュメント/bedrock/bedrock-studio-user-guide.pdf")
-}
+#   # エンティティタグ (ファイル更新のトリガーに必要)
+#   source_hash = filemd5("../サンプルドキュメント/bedrock/bedrock-studio-user-guide.pdf")
+# }
 
-########################################################
+#######################################################
 # Vector Database
 #######################################################
 resource "pinecone_index" "this" {
-  name = "knowledge-base"
-  # dimension = 1536
-  dimension = 1024
+  name      = "knowledge-base-${local.region}"
+  dimension = local.model_dimension[data.aws_bedrock_foundation_model.embedding.model_id]
+
   spec = {
     serverless = {
       cloud  = "aws"
@@ -62,7 +62,7 @@ resource "pinecone_index" "this" {
 }
 
 resource "aws_secretsmanager_secret" "this" {
-  name                    = "${local.prefix}-vctrdb-secret-${local.account_id}"
+  name                    = "${local.prefix}-vctrdb-secret-${local.account_id}-${local.region}"
   description             = "Password for the bedrock_user"
   recovery_window_in_days = var.vector_db.secret_recovery_window_in_days
 }
@@ -87,11 +87,7 @@ data "aws_bedrock_foundation_models" "embedding" {
 }
 
 data "aws_bedrock_foundation_model" "embedding" {
-  # model_id = "amazon.titan-embed-text-v1"
-  # model_id = "amazon.titan-embed-text-v1:2:8k"
-  model_id = "amazon.titan-embed-text-v2:0"
-  # model_id = "amazon.titan-embed-g1-text-02"
-  # model_id = "cohere.embed-multilingual-v3"
+  model_id = local.region == "ap-northeast-1" ? "amazon.titan-embed-text-v1" : "amazon.titan-embed-text-v2:0"
 }
 
 ########################################################
