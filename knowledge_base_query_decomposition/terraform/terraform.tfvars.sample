@@ -1,0 +1,9 @@
+system_name = "kb"
+environment_name = "sndbx"
+vector_db = {
+  pinecone_api_key = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  secret_recovery_window_in_days = 7
+}
+datasource = {
+  force_destroy = true
+}
