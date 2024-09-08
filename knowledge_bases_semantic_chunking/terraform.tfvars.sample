@@ -1,0 +1,9 @@
+system_name = "smntc"
+environment_name = "chnkng"
+vector_db = {
+  pinecone_api_key = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  secret_recovery_window_in_days = 7
+}
+datasource = {
+  force_destroy = true
+}
