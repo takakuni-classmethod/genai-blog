@@ -1,0 +1,33 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "FoundationModelStatementID",
+			"Effect": "Allow",
+			"Action": [
+				"bedrock:ListFoundationModels",
+				"bedrock:ListCustomModels",
+				"bedrock:GetInferenceProfile",
+				"bedrock:ListInferenceProfiles"
+			],
+			"Resource": "*"
+		},
+		{
+			"Sid": "ModelStatementID",
+			"Effect": "Allow",
+			"Action": ["bedrock:InvokeModel"],
+			"Resource": ["*"]
+		},
+		{
+			"Sid": "S3StatementID",
+			"Effect": "Allow",
+			"Action": ["s3:GetObject", "s3:ListBucket"],
+			"Resource": ["${bucket_arn}", "${bucket_arn}/*"],
+			"Condition": {
+				"StringEquals": {
+					"aws:PrincipalAccount": "${account_id}"
+				}
+			}
+		}
+	]
+}
