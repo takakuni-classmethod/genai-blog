@@ -1,0 +1,65 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "FoundationModelStatementID",
+			"Effect": "Allow",
+			"Action": ["bedrock:ListFoundationModels", "bedrock:ListCustomModels"],
+			"Resource": "*"
+		},
+		{
+			"Sid": "ModelStatementID",
+			"Effect": "Allow",
+			"Action": ["bedrock:InvokeModel"],
+			"Resource": ["*"]
+		},
+		{
+			"Sid": "S3StatementIDInput",
+			"Effect": "Allow",
+			"Action": ["s3:GetObject", "s3:ListBucket"],
+			"Resource": ["${datasource_bucket_arn}", "${datasource_bucket_arn}/*"],
+			"Condition": {
+				"StringEquals": {
+					"aws:PrincipalAccount": "${account_id}"
+				}
+			}
+		},
+		{
+			"Sid": "S3StatementIDOutput",
+			"Effect": "Allow",
+			"Action": ["s3:*Object", "s3:ListBucket"],
+			"Resource": ["${output_bucket_arn}", "${output_bucket_arn}/*"],
+			"Condition": {
+				"StringEquals": {
+					"aws:PrincipalAccount": "${account_id}"
+				}
+			}
+		},
+		{
+			"Sid": "BDAStatemanet",
+			"Effect": "Allow",
+			"Action": [
+				"bedrock:InvokeDataAutomationAsync",
+				"bedrock:GetDataAutomationStatus"
+			],
+			"Resource": ["*"]
+		},
+		{
+			"Sid": "SecretsManagerStatementID",
+			"Effect": "Allow",
+			"Action": ["secretsmanager:GetSecretValue"],
+			"Resource": ["${secret_arn}"]
+		},
+		{
+			"Sid": "AssociateThirdPartyKnowledgeBase",
+			"Effect": "Allow",
+			"Action": ["bedrock:AssociateThirdPartyKnowledgeBase"],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {
+					"bedrock:ThirdPartyKnowledgeBaseCredentialsSecretArn": "${secret_arn}"
+				}
+			}
+		}
+	]
+}
