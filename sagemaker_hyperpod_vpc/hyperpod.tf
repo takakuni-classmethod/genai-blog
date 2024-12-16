@@ -23,6 +23,12 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
   ip_protocol       = "-1"
 }
 
+resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_self" {
+  security_group_id            = aws_security_group.hyperpod.id
+  referenced_security_group_id = aws_security_group.hyperpod.id
+  ip_protocol                  = "-1"
+}
+
 ###################################################
 # SageMaker HyperPod Cluster
 ###################################################
