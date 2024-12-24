@@ -1,0 +1,36 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "AllowModelInvocationForOrchestration",
+			"Effect": "Allow",
+			"Action": [
+				"bedrock:InvokeModel*",
+				"bedrock:GetInferenceProfile",
+				"bedrock:ListInferenceProfiles",
+				"bedrock:DeleteInferenceProfile",
+				"bedrock:TagResource",
+				"bedrock:UntagResource",
+				"bedrock:ListTagsForResource"
+			],
+			"Resource": ["*"]
+		},
+		{
+			"Sid": "QueryAssociatedKnowledgeBases",
+			"Effect": "Allow",
+			"Action": ["bedrock:Retrieve", "bedrock:RetrieveAndGenerate"],
+			"Resource": ["${kb_arn}"]
+		},
+		{
+			"Sid": "AssociateThirdPartyKnowledgeBase",
+			"Effect": "Allow",
+			"Action": ["bedrock:AssociateThirdPartyKnowledgeBase"],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {
+					"bedrock:ThirdPartyKnowledgeBaseCredentialsSecretArn": "${secret_arn}"
+				}
+			}
+		}
+	]
+}
