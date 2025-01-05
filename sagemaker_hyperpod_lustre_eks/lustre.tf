@@ -168,6 +168,19 @@ resource "aws_iam_role_policy_attachment" "fsx_csi_driver" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonFSxFullAccess"
 }
 
+resource "helm_release" "aws_fsx_csi_driver" {
+  name              = "aws-fsx-csi-driver"
+  repository        = "https://kubernetes-sigs.github.io/aws-fsx-csi-driver"
+  chart             = "aws-fsx-csi-driver"
+  namespace         = "kube-system"
+  dependency_update = true
+  wait              = false
+
+  depends_on = [
+    aws_eks_access_policy_association.this
+  ]
+}
+
 data "kubernetes_service_account_v1" "this" {
   metadata {
     name      = "fsx-csi-controller-sa"
@@ -195,5 +208,74 @@ resource "kubernetes_annotations" "this" {
 
   depends_on = [
     aws_eks_access_policy_association.this
+  ]
+}
+
+###################################################
+# Persistent Volume and Persistent Volume Claim
+###################################################
+resource "kubernetes_storage_class_v1" "this" {
+  metadata {
+    name = "fsx-sc"
+  }
+  storage_provisioner = "fsx.csi.aws.com"
+  parameters = {
+    "fileSystemId"     = aws_fsx_lustre_file_system.this.id
+    "subnetId"         = aws_fsx_lustre_file_system.this.subnet_ids[0]
+    "securityGroupIds" = aws_security_group.lustre.id
+  }
+
+  depends_on = [
+    aws_eks_access_policy_association.this
+  ]
+}
+
+resource "kubernetes_persistent_volume_v1" "this" {
+  metadata {
+    name = "fsx-pv"
+  }
+
+  spec {
+    capacity = {
+      storage = "1200Gi"
+    }
+    access_modes                     = ["ReadWriteMany"]
+    volume_mode                      = "Filesystem"
+    persistent_volume_reclaim_policy = "Retain"
+    storage_class_name               = kubernetes_storage_class_v1.this.metadata[0].name
+    persistent_volume_source {
+      csi {
+        driver        = "fsx.csi.aws.com"
+        volume_handle = aws_fsx_lustre_file_system.this.id
+        volume_attributes = {
+          dnsname   = aws_fsx_lustre_file_system.this.dns_name
+          mountname = aws_fsx_lustre_file_system.this.mount_name
+        }
+      }
+    }
+  }
+
+  depends_on = [
+    aws_eks_access_policy_association.this
+  ]
+}
+
+resource "kubernetes_persistent_volume_claim_v1" "this" {
+  metadata {
+    name = "fsx-claim"
+  }
+  spec {
+    access_modes       = ["ReadWriteMany"]
+    storage_class_name = kubernetes_storage_class_v1.this.metadata[0].name
+    resources {
+      requests = {
+        storage = "1200Gi"
+      }
+    }
+  }
+
+  depends_on = [
+    aws_eks_access_policy_association.this,
+    kubernetes_persistent_volume_v1.this
   ]
 }

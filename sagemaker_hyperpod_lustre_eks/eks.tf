@@ -79,16 +79,6 @@ resource "aws_eks_cluster" "this" {
 }
 
 ###################################################
-# EKS Cluster Addons
-###################################################
-resource "aws_eks_addon" "vpc_cni" {
-  cluster_name                = aws_eks_cluster.this.name
-  addon_name                  = "vpc-cni"
-  addon_version               = "v1.19.0-eksbuild.1"
-  resolve_conflicts_on_create = "OVERWRITE"
-}
-
-###################################################
 # EKS Cluster Access Entries
 ###################################################
 data "aws_iam_session_context" "this" {
@@ -109,4 +99,28 @@ resource "aws_eks_access_policy_association" "this" {
   access_scope {
     type = "cluster"
   }
+}
+
+###################################################
+# EKS Cluster Addons
+###################################################
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name                = aws_eks_cluster.this.name
+  addon_name                  = "vpc-cni"
+  addon_version               = "v1.19.0-eksbuild.1"
+  resolve_conflicts_on_create = "OVERWRITE"
+}
+
+###################################################
+# HyperPod Dependencies
+###################################################
+resource "helm_release" "hyperpod_dependencies" {
+  name              = "hyperpod-dependencies"
+  chart             = "./sagemaker-hyperpod-cli/helm_chart/HyperPodHelmChart"
+  dependency_update = true
+  wait              = false
+
+  depends_on = [
+    aws_eks_access_policy_association.this
+  ]
 }
