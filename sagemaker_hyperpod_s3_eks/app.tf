@@ -1,3 +1,17 @@
+###################################################
+# Hello Sample file
+###################################################
+resource "aws_s3_object" "hello_from_s3" {
+  bucket = aws_s3_bucket.data_repository.bucket
+  key    = "training/hello_from_s3.txt"
+
+  content = "hello! from S3!"
+
+  depends_on = [
+    kubernetes_pod_v1.this
+  ]
+}
+
 ############################################
 # Sample Kubernetes Pod
 ############################################
@@ -28,7 +42,6 @@ resource "kubernetes_pod_v1" "this" {
     kubernetes_persistent_volume_v1.this,
     awscc_sagemaker_cluster.this,
     aws_eks_addon.s3_csi_driver,
-    aws_iam_role_policy_attachment.s3_csi_driver,
-    # aws_iam_role_policy_attachment.hyperpod_s3_csi_driver,
+    aws_iam_role_policy_attachment.s3_csi_driver
   ]
 }

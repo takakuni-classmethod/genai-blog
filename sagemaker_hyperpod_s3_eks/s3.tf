@@ -21,20 +21,6 @@ resource "aws_s3_bucket_ownership_controls" "data_repository" {
   }
 }
 
-# ###################################################
-# # Hello Sample file
-# ###################################################
-# resource "aws_s3_object" "hello_from_s3" {
-#   bucket = aws_s3_bucket.data_repository.bucket
-#   key    = "/hello_from_s3.txt"
-
-#   content = "hello! from S3!"
-
-#   depends_on = [
-#     kubernetes_pod_v1.this
-#   ]
-# }
-
 ###################################################
 # Mountpoint for Amazon S3 CSI Driver at AWS
 ###################################################
@@ -157,7 +143,7 @@ resource "kubernetes_persistent_volume_v1" "this" {
       "allow-delete",
       "allow-overwrite",
       "region ${local.region}",
-      "prefix /"
+      "prefix training/"
     ]
     persistent_volume_source {
       csi {
