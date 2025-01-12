@@ -1,3 +1,8 @@
+resource "aws_ecr_repository" "this" {
+  name         = "${local.prefix}-fsdp"
+  force_delete = true
+}
+
 ###################################################
 # IAM Role for EKS Cluster
 ###################################################
@@ -130,15 +135,16 @@ resource "aws_eks_addon" "amazon_cloudwatch_observability" {
   ]
 }
 
-# resource "aws_eks_addon" "amazon_sagemaker_hyperpod_taskgovernance" {
-#   cluster_name                = aws_eks_cluster.this.name
-#   addon_name                  = "amazon-sagemaker-hyperpod-taskgovernance"
-#   resolve_conflicts_on_create = "OVERWRITE"
+resource "aws_eks_addon" "amazon_sagemaker_hyperpod_taskgovernance" {
+  cluster_name                = aws_eks_cluster.this.name
+  addon_name                  = "amazon-sagemaker-hyperpod-taskgovernance"
+  resolve_conflicts_on_create = "OVERWRITE"
+  addon_version               = "v1.0.0-eksbuild.4"
 
-#   depends_on = [
-#     awscc_sagemaker_cluster.this,
-#   ]
-# }
+  depends_on = [
+    awscc_sagemaker_cluster.this,
+  ]
+}
 
 ###################################################
 # EKS Cluster Access Entries

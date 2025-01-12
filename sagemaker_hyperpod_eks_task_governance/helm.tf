@@ -6,6 +6,6 @@ resource "helm_release" "hyperpod_dependencies" {
 
   depends_on = [
     aws_eks_cluster.this,
-    aws_eks_access_entry.this
+    aws_eks_access_policy_association.this
   ]
 }

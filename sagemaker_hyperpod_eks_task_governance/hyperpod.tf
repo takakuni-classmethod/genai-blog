@@ -157,9 +157,9 @@ resource "awscc_sagemaker_cluster" "this" {
   instance_groups = [
     {
       execution_role      = aws_iam_role.hyperpod.arn
-      instance_count      = 2
+      instance_count      = 4
       instance_group_name = "worker-group"
-      instance_type       = "ml.m5.2xlarge"
+      instance_type       = "ml.g5.12xlarge"
       life_cycle_config = {
         source_s3_uri = "s3://${aws_s3_bucket.life_cycle_scripts.id}/config/"
         on_create     = "on_create.sh"
@@ -175,6 +175,7 @@ resource "awscc_sagemaker_cluster" "this" {
   depends_on = [
     aws_iam_role_policy_attachment.hyperpod_vpc,
     aws_iam_role_policy_attachment.hyperpod_lifecycle,
-    aws_vpc_endpoint.s3
+    aws_vpc_endpoint.s3,
+    helm_release.hyperpod_dependencies
   ]
 }
