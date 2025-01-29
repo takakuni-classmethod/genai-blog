@@ -1,0 +1,19 @@
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: inference
+  namespace: inference
+spec:
+  template:
+    spec:
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ['on-demand']
+        - key: eks.amazonaws.com/instance-family
+          operator: In
+          values: ['g6']
+      nodeClassRef:
+        group: eks.amazonaws.com
+        kind: NodeClass
+        name: default
