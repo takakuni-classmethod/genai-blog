@@ -253,7 +253,19 @@ resource "terraform_data" "setup_vector_db" {
 
   # Create an index with the cosine operator which the bedrock can use to query the data.
   provisioner "local-exec" {
-    command     = "bash ./setup_vector_db/06_create_index.sh"
+    command     = "bash ./setup_vector_db/06_create_vector_index.sh"
+    working_dir = "${path.module}/scripts"
+    environment = {
+      REGION        = local.region
+      CLUSTER_ARN   = aws_rds_cluster.this.arn
+      SECRET_ARN    = aws_secretsmanager_secret.this.arn
+      DATABASE_NAME = aws_rds_cluster.this.database_name
+    }
+  }
+
+  # Create an index with the cosine operator which the bedrock can use to query the data.
+  provisioner "local-exec" {
+    command     = "bash ./setup_vector_db/07_create_text_index.sh"
     working_dir = "${path.module}/scripts"
     environment = {
       REGION        = local.region

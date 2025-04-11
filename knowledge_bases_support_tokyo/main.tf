@@ -118,6 +118,44 @@ resource "aws_bedrockagent_knowledge_base" "this" {
 
   depends_on = [
     aws_iam_role_policy_attachment.knowledge_bases,
-    module.vector_db.instance_01
+    module.vector_db.instance_01,
+    module.vector_db.setup_vector_db
   ]
+}
+
+########################################################
+# Knowledge Base Data Source
+########################################################
+resource "aws_s3_object" "document" {
+  # アップロード元(ローカル)
+  source = "../サンプルドキュメント/hybrid/hybrid_search.md"
+  # アップロード先(S3)
+  key    = "hybrid_search.md"
+  bucket = module.datasource.bucket.id
+
+  # エンティティタグ (ファイル更新のトリガーに必要)
+  source_hash = filemd5("../サンプルドキュメント/hybrid/hybrid_search.md")
+}
+
+resource "aws_bedrockagent_data_source" "this" {
+  name                 = "${local.prefix}-knowledge-base-datasource"
+  knowledge_base_id    = aws_bedrockagent_knowledge_base.this.id
+  data_deletion_policy = "DELETE" // "RETAIN"
+  data_source_configuration {
+    type = "S3"
+    s3_configuration {
+      bucket_arn = module.datasource.bucket.arn
+    }
+  }
+
+  vector_ingestion_configuration {
+    chunking_configuration {
+      chunking_strategy = "SEMANTIC"
+      semantic_chunking_configuration {
+        breakpoint_percentile_threshold = 95
+        buffer_size                     = 0
+        max_token                       = 300
+      }
+    }
+  }
 }

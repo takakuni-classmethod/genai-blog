@@ -20,7 +20,7 @@ network = {
 vector_db = {
   multi_az                    = false
   engine_name                 = "aurora-postgresql"
-  engine_family               = "aurora-postgresql15"
+  engine_family               = "aurora-postgresql16"
   database_name               = "postgresql"
   master_username             = "kb_admin"
   manage_master_user_password = true
@@ -48,7 +48,7 @@ vector_db = {
   }
 
   scaling_configuration = {
-    min_capacity = 0.5
+    min_capacity = 0
     max_capacity = 1
   }
 

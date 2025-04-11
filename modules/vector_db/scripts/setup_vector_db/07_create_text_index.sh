@@ -6,4 +6,4 @@ aws rds-data --region $REGION execute-statement \
   --resource-arn $CLUSTER_ARN \
   --secret-arn $SECRET_ARN \
   --database $DATABASE_NAME \
-  --sql "CREATE INDEX IF NOT EXISTS bedrock_kb_embedding_idx on bedrock_integration.bedrock_kb USING hnsw (embedding vector_cosine_ops);"
+  --sql "CREATE INDEX IF NOT EXISTS bedrock_kb_chunks_gin_idx on bedrock_integration.bedrock_kb USING gin (to_tsvector('simple', chunks));"
